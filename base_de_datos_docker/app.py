@@ -19,68 +19,90 @@ def init_db():
     
     # Crear tabla de usuarios de ejemplo
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS usuarios (
+        CREATE TABLE IF NOT EXISTS usuario (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
+            direccion TEXT NOT NULL,
+            telefono TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
-            edad INTEGER,
-            fecha_registro DATE DEFAULT CURRENT_DATE
+            fecha_registro DATE DEFAULT CURRENT_DATE,
+            fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         )
     ''')
     
-    # Crear tabla de productos de ejemplo
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS productos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT NOT NULL,
-            precio REAL NOT NULL,
-            categoria TEXT,
-            stock INTEGER DEFAULT 0
-        )
-    ''')
+    # # Crear tabla de productos de ejemplo
+    # cursor.execute('''
+    #     CREATE TABLE IF NOT EXISTS productos (
+    #         id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #         nombre TEXT NOT NULL,
+    #         precio REAL NOT NULL,
+    #         categoria TEXT,
+    #         stock INTEGER DEFAULT 0
+    #     )
+    # ''')
     
-    # Crear tabla de ventas de ejemplo
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS ventas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            usuario_id INTEGER,
-            producto_id INTEGER,
-            cantidad INTEGER,
-            fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (usuario_id) REFERENCES usuarios (id),
-            FOREIGN KEY (producto_id) REFERENCES productos (id)
-        )
-    ''')
+    # # Crear tabla de ventas de ejemplo
+    # cursor.execute('''
+    #     CREATE TABLE IF NOT EXISTS ventas (
+    #         id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #         usuario_id INTEGER,
+    #         producto_id INTEGER,
+    #         cantidad INTEGER,
+    #         fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP,
+    #         FOREIGN KEY (usuario_id) REFERENCES usuarios (id),
+    #         FOREIGN KEY (producto_id) REFERENCES productos (id)
+    #     )
+    # ''')
     
     # Insertar datos de ejemplo si no existen
     cursor.execute('SELECT COUNT(*) FROM usuarios')
     if cursor.fetchone()[0] == 0:
         usuarios_ejemplo = [
-            ('Juan Pérez', 'juan@email.com', 28),
-            ('María García', 'maria@email.com', 34),
-            ('Carlos López', 'carlos@email.com', 22),
-            ('Ana Martín', 'ana@email.com', 31),
-            ('Luis Rodríguez', 'luis@email.com', 26)
+            ("admin", "Juan Perez", "Calle Falsa 123", "3217659678", "juanperez@example.com", "2023-01-15"),
+            ("cliente", "Maria Gomez", "Avenida Siempre Viva 742", "3218945793", "mariagomez@example.com", "2023-02-20"),
+            ("cliente", "Carlos Ruiz", "Boulevard Central 456", "3217334698", "Carlosruiz@example.com", "2023-03-10"),
+            ("admin", "Ana Torres", "Calle Luna 789", "3105903519", "anatorres@example.com", "2023-04-05"),
+            ("cliente", "Luis Fernandez", "Avenida Sol 321", "3128549613", "luisfernandez@example.com", "2023-05-12"),
+            ("cliente", "Sofia Martinez", "Calle Estrella 654", "3102569813", "sofiamartinez@example.com", "2023-06-18"),
+            ("admin", "Pedro Sanchez", "Avenida Nube 987", "3217845613", "pedrosanchez@example.com", "2023-07-22"),
+            ("cliente", "Laura Diaz", "Calle Mar 159", "3104789652", "lauradiaz@example.com", "2023-08-30"),
+            ("cliente", "Jorge Ramirez", "Boulevard Rio 753", "3123698745", "jorgeramirez@example.com", "2023-09-14"),
+            ("admin", "Elena Morales", "Avenida Cielo 852", "3216549870", "elenamorales@example.com", "2023-10-01"),
+            ("cliente", "Andres Gutierrez", "Calle Tierra 951", "3107894561", "andresgutierrez@example.com", "2023-11-11"),
+            ("cliente", "Marta Lopez", "Avenida Viento 357", "3124789653", "martalopez@example.com", "2023-12-25"),
+            ("admin", "Ricardo Jimenez", "Calle Agua 258", "3219876540", "ricardojimenez@example.com", "2024-01-05"),
+            ("cliente", "Gabriela Castillo", "Boulevard Fuego 147", "3106543219", "gabrielacastillo@example.com", "2024-02-14"),
+            ("cliente", "Fernando Vega", "Avenida Montaña 369", "3123456789", "fernandovega@example.com", "2024-03-22"),
+            ("admin", "Isabel Rojas", "Calle Valle 741", "3211234567", "isabelrojas@example.com", "2024-04-18"),
+            ("cliente", "Diego Moreno", "Avenida Playa 852", "3109876543", "diegomoreno@example.com", "2024-05-30"),
+            ("cliente", "Natalia Herrera", "Calle Bosque 963", "3128765432", "nataliaherrera@example.com", "2024-06-15"),
+            ("admin", "Santiago Alvarez", "Boulevard Campo 159", "3214567890", "santiagoalvarez@example.com", "2024-07-04"),
+            ("cliente", "Valentina Cruz", "Avenida Ciudad 753", "3103216548", "valentinacruz@example.com", "2024-08-19"),
+            ("cliente", "Sebastian Flores", "Calle Pueblo 258", "3121598746", "sebastianflorez@example.com", "2024-09-27"),
+            ("admin", "Camila Medina", "Avenida Centro 147", "3217894562", "camilamedina@example.com", "2024-10-13"),
+            ("cliente", "Alejandro Soto", "Boulevard Distrito 369", "3106549871", "alejandrosoto@example.com", "2024-11-29"),
+            ("cliente", "Daniela Vargas", "Calle Municipio 741", "3129871234", "danielavargas@example.com", "2024-12-31"),
+            ("admin", "Miguel Ortega", "Avenida Provincia 852", "3213216549", "miguelortega@example.com", "2025-01-20")
         ]
-        cursor.executemany('INSERT INTO usuarios (nombre, email, edad) VALUES (?, ?, ?)', usuarios_ejemplo)
+        cursor.executemany('INSERT INTO usuario (rol, nombre, direccion, telefono, email, fecha_registro) VALUES (?, ?, ?, ?, ?, ?)', usuarios_ejemplo)
         
-        productos_ejemplo = [
-            ('Laptop', 999.99, 'Electrónicos', 15),
-            ('Mouse', 25.50, 'Accesorios', 50),
-            ('Teclado', 45.00, 'Accesorios', 30),
-            ('Monitor', 299.99, 'Electrónicos', 20),
-            ('Silla Gaming', 199.99, 'Muebles', 8)
-        ]
-        cursor.executemany('INSERT INTO productos (nombre, precio, categoria, stock) VALUES (?, ?, ?, ?)', productos_ejemplo)
+        # productos_ejemplo = [
+        #     ('Laptop', 999.99, 'Electrónicos', 15),
+        #     ('Mouse', 25.50, 'Accesorios', 50),
+        #     ('Teclado', 45.00, 'Accesorios', 30),
+        #     ('Monitor', 299.99, 'Electrónicos', 20),
+        #     ('Silla Gaming', 199.99, 'Muebles', 8)
+        # ]
+        # cursor.executemany('INSERT INTO productos (nombre, precio, categoria, stock) VALUES (?, ?, ?, ?)', productos_ejemplo)
         
-        ventas_ejemplo = [
-            (1, 1, 1),
-            (2, 2, 2),
-            (1, 3, 1),
-            (3, 1, 1),
-            (4, 4, 1)
-        ]
-        cursor.executemany('INSERT INTO ventas (usuario_id, producto_id, cantidad) VALUES (?, ?, ?)', ventas_ejemplo)
+        # ventas_ejemplo = [
+        #     (1, 1, 1),
+        #     (2, 2, 2),
+        #     (1, 3, 1),
+        #     (3, 1, 1),
+        #     (4, 4, 1)
+        # ]
+        # cursor.executemany('INSERT INTO ventas (usuario_id, producto_id, cantidad) VALUES (?, ?, ?)', ventas_ejemplo)
     
     conn.commit()
     conn.close()
