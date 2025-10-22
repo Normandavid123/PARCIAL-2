@@ -20,13 +20,14 @@ def init_db():
     # Crear tabla de usuarios de ejemplo
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS usuario (
+            rol TEXT NOT NULL,
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
             direccion TEXT NOT NULL,
             telefono TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
             fecha_registro DATE DEFAULT CURRENT_DATE,
-            fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     
@@ -55,7 +56,7 @@ def init_db():
     # ''')
     
     # Insertar datos de ejemplo si no existen
-    cursor.execute('SELECT COUNT(*) FROM usuarios')
+    cursor.execute('SELECT COUNT(*) FROM usuario')
     if cursor.fetchone()[0] == 0:
         usuarios_ejemplo = [
             ("admin", "Juan Perez", "Calle Falsa 123", "3217659678", "juanperez@example.com", "2023-01-15"),
@@ -85,7 +86,6 @@ def init_db():
             ("admin", "Miguel Ortega", "Avenida Provincia 852", "3213216549", "miguelortega@example.com", "2025-01-20")
         ]
         cursor.executemany('INSERT INTO usuario (rol, nombre, direccion, telefono, email, fecha_registro) VALUES (?, ?, ?, ?, ?, ?)', usuarios_ejemplo)
-        
         # productos_ejemplo = [
         #     ('Laptop', 999.99, 'Electrónicos', 15),
         #     ('Mouse', 25.50, 'Accesorios', 50),
