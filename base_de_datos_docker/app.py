@@ -20,21 +20,20 @@ def init_db():
     # Crear tabla de usuarios de ejemplo
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS usuario (
+            id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
             rol TEXT NOT NULL,
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
             direccion TEXT NOT NULL,
             telefono TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
-            fecha_registro DATE DEFAULT CURRENT_DATE,
-            fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            fecha_registro DATE DEFAULT CURRENT_DATE
         )
     ''')
     
-    # Crear tabla de productos de ejemplo
+    # Crear tabla de cuentas de ejemplo
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Cuenta (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_Cuenta INTEGER PRIMARY KEY AUTOINCREMENT,
             usuario TEXT NOT NULL,
             tipo TEXT NOT NULL,
             saldo decimal NOT NULL,
@@ -43,25 +42,21 @@ def init_db():
         )
     ''')
     
-
-    
-    # Crear tabla de ventas de ejemplo
+    # Crear tabla de transacciones de ejemplo
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS ventas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            usuario_id INTEGER,
-            producto_id INTEGER,
-            cantidad INTEGER,
-            fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (usuario_id) REFERENCES usuarios (id),
-            FOREIGN KEY (producto_id) REFERENCES productos (id)
+        CREATE TABLE IF NOT EXISTS transaccion (
+            id_transaccion INTEGER PRIMARY KEY AUTOINCREMENT,
+            cuenta INTEGER,
+            tipo INTEGER,
+            monto DECIMAL NOT NULL,
+            fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     
     # Insertar datos de ejemplo si no existen
     cursor.execute('SELECT COUNT(*) FROM usuario')
     if cursor.fetchone()[0] == 0:
-        usuarios_ejemplo = [
+        usuario_ejemplo = [
             ("admin", "Juan Perez", "Calle Falsa 123", "3217659678", "juanperez@example.com", "2023-01-15"),
             ("cliente", "Maria Gomez", "Avenida Siempre Viva 742", "3218945793", "mariagomez@example.com", "2023-02-20"),
             ("cliente", "Carlos Ruiz", "Boulevard Central 456", "3217334698", "Carlosruiz@example.com", "2023-03-10"),
@@ -88,46 +83,66 @@ def init_db():
             ("cliente", "Daniela Vargas", "Calle Municipio 741", "3129871234", "danielavargas@example.com", "2024-12-31"),
             ("admin", "Miguel Ortega", "Avenida Provincia 852", "3213216549", "miguelortega@example.com", "2025-01-20")
         ]
-        cursor.executemany('INSERT INTO usuario (rol, nombre, direccion, telefono, email, fecha_registro) VALUES (?, ?, ?, ?, ?, ?)', usuarios_ejemplo)
+        cursor.executemany('INSERT INTO usuario (rol, nombre, direccion, telefono, email, fecha_registro) VALUES (?, ?, ?, ?, ?, ?)', usuario_ejemplo)
         
-        Cuenta_ejemplo = [(1, 'Ahorros', 1500.00, '2022-01-15', 'Activo'),
-                      (2, 'Corriente', 2500.50, '2021-06-20', 'Activo'),
-                      (3, 'Ahorros', 3000.75, '2023-03-10', 'Inactivo'),
-                      (4, 'Corriente', 1200.00, '2020-11-05', 'Activo'),
-                      (5, 'Ahorros', 500.25, '2022-08-30', 'Inactivo'),
-                      (6, 'Corriente', 750.00, '2021-12-12', 'Activo'),
-                      (7, 'Ahorros', 2000.00, '2023-05-22', 'Activo'),
-                      (8, 'Corriente', 1800.40, '2022-03-14', 'Inactivo'),
-                      (9, 'Ahorros', 2200.60, '2021-09-18', 'Activo'),
-                      (10, 'Corriente', 1600.80, '2020-07-25', 'Activo'),
-                      (11, 'Ahorros', 1400.90, '2023-01-30', 'Inactivo'),
-                      (12, 'Corriente', 2700.10, '2022-04-16', 'Activo'),
-                      (13, 'Ahorros', 3200.55, '2021-11-11', 'Activo'),
-                      (14, 'Corriente', 1300.35, '2020-10-09', 'Inactivo'),
-                      (15, 'Ahorros', 600.45, '2023-06-05', 'Activo'),
-                      (16, 'Corriente', 800.75, '2022-02-28', 'Activo'),
-                      (17, 'Ahorros', 2100.85, '2021-08-23', 'Inactivo'),
-                      (18, 'Corriente', 1700.95, '2020-12-19', 'Activo'),
-                      (19, 'Ahorros', 1500.15, '2023-04-07', 'Activo'),
-                      (20, 'Corriente', 2600.25, '2022-05-13', 'Inactivo'),
-                      (21, 'Ahorros', 3100.35, '2021-10-29', 'Activo'),
-                      (22, 'Corriente', 1400.45, '2020-09-17', 'Activo'),
-                      (23, 'Ahorros', 700.55, '2023-02-03', 'Inactivo'),
-                      (24, 'Corriente', 900.65, '2022-06-21', 'Activo'),
-                      (25, 'Ahorros', 2300.75, '2021-07-14', 'Activo')
-                        ]
+        Cuenta_ejemplo = [
+            (1, 'Ahorros', 1500.00, '2022-01-15', 'Activo'),
+            (2, 'Corriente', 2500.50, '2021-06-20', 'Activo'),
+            (3, 'Ahorros', 3000.75, '2023-03-10', 'Inactivo'),
+            (4, 'Corriente', 1200.00, '2020-11-05', 'Activo'),
+            (5, 'Ahorros', 500.25, '2022-08-30', 'Inactivo'),
+            (6, 'Corriente', 750.00, '2021-12-12', 'Activo'),
+            (7, 'Ahorros', 2000.00, '2023-05-22', 'Activo'),
+            (8, 'Corriente', 1800.40, '2022-03-14', 'Inactivo'),
+            (9, 'Ahorros', 2200.60, '2021-09-18', 'Activo'),
+            (10, 'Corriente', 1600.80, '2020-07-25', 'Activo'),
+            (11, 'Ahorros', 1400.90, '2023-01-30', 'Inactivo'),
+            (12, 'Corriente', 2700.10, '2022-04-16', 'Activo'),
+            (13, 'Ahorros', 3200.55, '2021-11-11', 'Activo'),
+            (14, 'Corriente', 1300.35, '2020-10-09', 'Inactivo'),
+            (15, 'Ahorros', 600.45, '2023-06-05', 'Activo'),
+            (16, 'Corriente', 800.75, '2022-02-28', 'Activo'),
+            (17, 'Ahorros', 2100.85, '2021-08-23', 'Inactivo'),
+            (18, 'Corriente', 1700.95, '2020-12-19', 'Activo'),
+            (19, 'Ahorros', 1500.15, '2023-04-07', 'Activo'),
+            (20, 'Corriente', 2600.25, '2022-05-13', 'Inactivo'),
+            (21, 'Ahorros', 3100.35, '2021-10-29', 'Activo'),
+            (22, 'Corriente', 1400.45, '2020-09-17', 'Activo'),
+            (23, 'Ahorros', 700.55, '2023-02-03', 'Inactivo'),
+            (24, 'Corriente', 900.65, '2022-06-21', 'Activo'),
+            (25, 'Ahorros', 2300.75, '2021-07-14', 'Activo')
+        ]
         cursor.executemany('INSERT INTO Cuenta (usuario, tipo, saldo, fecha_apertura, estado) VALUES (?, ?, ?, ?, ?)', Cuenta_ejemplo)
-
-        transacciones_ejemplo = [
-        # productos_ejemplo = [
-        #     ('Laptop', 999.99, 'Electrónicos', 15),
-        #     ('Mouse', 25.50, 'Accesorios', 50),
-        #     ('Teclado', 45.00, 'Accesorios', 30),
-        #     ('Monitor', 299.99, 'Electrónicos', 20),
-        #     ('Silla Gaming', 199.99, 'Muebles', 8)
-        # ]
-        # cursor.executemany('INSERT INTO productos (nombre, precio, categoria, stock) VALUES (?, ?, ?, ?)', productos_ejemplo)
         
+        transaccion_ejemplo = [
+            (1, 'Deposito', 500.00, '2023-07-01 10:30:00'),
+            (2, 'Retiro', 200.00, '2023-07-02 14:15:00'),
+            (3, 'Transferencia', 150.00, '2023-07-03 09:45:00'),
+            (4, 'Retiro', 100.00, '2023-07-04 11:20:00'),
+            (5, 'Deposito', 300.00, '2023-07-05 16:50:00'),
+            (6, 'Transferencia', 250.00, '2023-07-06 13:10:00'),
+            (7, 'Deposito', 400.00, '2023-07-07 12:00:00'),
+            (8, 'Retiro', 150.00, '2023-07-08 15:30:00'),
+            (9, 'Transferencia', 350.00, '2023-07-09 10:05:00'),
+            (10, 'Deposito', 600.00, '2023-07-10 14:40:00'),
+            (11, 'Retiro', 200.00, '2023-07-11 09:25:00'),
+            (12, 'Transferencia', 450.00, '2023-07-12 11:55:00'),
+            (13, 'Deposito', 700.00, '2023-07-13 16:15:00'),
+            (14, 'Retiro', 300.00, '2023-07-14 13:35:00'),
+            (15, 'Transferencia', 500.00, '2023-07-15 10:50:00'),
+            (16, 'Deposito', 800.00, '2023-07-16 15:20:00'),
+            (17, 'Retiro', 250.00, '2023-07-17 12:45:00'),
+            (18, 'Transferencia', 600.00, '2023-07-18 09:30:00'),
+            (19, 'Deposito', 900.00, '2023-07-19 14:10:00'),
+            (20, 'Retiro', 350.00, '2023-07-20 11:55:00'),
+            (21, 'Transferencia', 700.00, '2023-07-21 10:20:00'),
+            (22, 'Deposito', 1000.00, '2023-07-22 15:45:00'),
+            (23, 'Retiro', 400.00, '2023-07-23 13:15:00'),
+            (24, 'Transferencia', 800.00, '2023-07-24 09:40:00'),
+            (25, 'Deposito', 1100.00, '2023-07-25 14:05:00')
+        ]
+        cursor.executemany('INSERT INTO transaccion (cuenta, tipo, monto, fecha_hora) VALUES (?, ?, ?, ?)', transaccion_ejemplo)
+
         # ventas_ejemplo = [
         #     (1, 1, 1),
         #     (2, 2, 2),
