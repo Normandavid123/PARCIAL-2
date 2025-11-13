@@ -52,7 +52,21 @@ def init_db():
             fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
-    
+
+    # Crear tabla de tarjeta de ejemplo
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tarjeta (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cuenta INTEGER,
+            tipo TEXT NOT NULL,
+            numero_tarjeta TEXT UNIQUE NOT NULL,
+            fecha_emision DATE DEFAULT CURRENT_DATE,
+            fecha_vencimiento DATE NOT NULL,
+            estado TEXT NOT NULL,
+            FOREIGN KEY (cuenta) REFERENCES Cuenta(id_Cuenta)
+         )                  
+    ''')
+
     # Insertar datos de ejemplo si no existen
     cursor.execute('SELECT COUNT(*) FROM usuario')
     if cursor.fetchone()[0] == 0:
@@ -142,6 +156,35 @@ def init_db():
             (25, 'Deposito', 1100.00, '2023-07-25 14:05:00')
         ]
         cursor.executemany('INSERT INTO transaccion (cuenta, tipo, monto, fecha_hora) VALUES (?, ?, ?, ?)', transaccion_ejemplo)
+
+        tarjeta_ejemplo = [
+            (1, 'Debito', '1234-5678-9012-3456', '2023-01-15', '2026-01-15', 'Activo'),
+            (2, 'Credito', '2345-6789-0123-4567', '2022-06-20', '2025-06-20', 'Activo'),
+            (3, 'Debito', '3456-7890-1234-5678', '2023-03-10', '2026-03-10', 'Inactivo'),
+            (4, 'Credito', '4567-8901-2345-6789', '2021-11-05', '2024-11-05', 'Activo'),
+            (5, 'Debito', '5678-9012-3456-7890', '2022-08-30', '2025-08-30', 'Inactivo'),
+            (6, 'Credito', '6789-0123-4567-8901', '2021-12-12', '2024-12-12', 'Activo'),
+            (7, 'Debito', '7890-1234-5678-9012', '2023-05-22', '2026-05-22', 'Activo'),
+            (8, 'Credito', '8901-2345-6789-0123', '2022-03-14', '2025-03-14', 'Inactivo'),
+            (9, 'Debito', '9012-3456-7890-1234', '2021-09-18', '2024-09-18', 'Activo'),
+            (10, 'Credito', '0123-4567-8901-2345', '2020-07-25', '2023-07-25', 'Activo'),
+            (11, 'Debito', '1123-4567-8901-2345', '2023-01-30', '2026-01-30', 'Inactivo'),
+            (12, 'Credito', '2123-4567-8901-2345', '2022-04-16', '2025-04-16', 'Activo'),
+            (13, 'Debito', '3123-4567-8901-2345', '2021-11-11', '2024-11-11', 'Activo'),
+            (14, 'Credito', '4123-4567-8901-2345', '2020-10-09', '2023-10-09', 'Inactivo'),
+            (15, 'Debito', '5123-4567-8901-2345', '2023-06-05', '2026-06-05', 'Activo'),
+            (16, 'Credito', '6123-4567-8901-2345', '2022-02-28', '2025-02-28', 'Activo'),
+            (17, 'Debito', '7123-4567-8901-2345', '2021-08-23', '2024-08-23', 'Inactivo'),
+            (18, 'Credito', '8123-4567-8901-2345', '2020-12-19', '2023-12-19', 'Activo'),
+            (19, 'Debito', '9123-4567-8901-2345', '2023-04-07', '2026-04-07', 'Activo'),
+            (20, 'Credito', '0223-4567-8901-2345', '2022-05-13', '2025-05-13', 'Inactivo'),
+            (21, 'Debito', '1323-4567-8901-2345', '2021-10-29', '2024-10-29', 'Activo'),
+            (22, 'Credito', '2423-4567-8901-2345', '2020-09-17', '2023-09-17', 'Activo'),
+            (23, 'Debito', '3523-4567-8901-2345', '2023-02-03', '2026-02-03', 'Inactivo'),
+            (24, 'Credito', '4623-4567-8901-2345', '2022-06-21', '2025-06-21', 'Activo'),
+            (25, 'Debito', '5723-4567-8901-2345', '2021-07-14', '2024-07-14', 'Activo')
+        ]    
+        cursor.executemany('INSERT INTO tarjeta (cuenta, tipo, numero_tarjeta, fecha_emision, fecha_vencimiento, estado) VALUES (?, ?, ?, ?, ?, ?)', tarjeta_ejemplo)
 
         # ventas_ejemplo = [
         #     (1, 1, 1),
